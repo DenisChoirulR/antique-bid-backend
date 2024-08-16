@@ -1,4 +1,4 @@
-# Auction Application Backend
+# Antique-Bid Backend
 
 This is the backend for the Auction Application built with Laravel. It provides RESTful API endpoints for managing users, items, bids, auto-bids, and notifications.
 
@@ -77,37 +77,8 @@ This is the backend for the Auction Application built with Laravel. It provides 
 
 ### User Roles
 
-- **Admin:** Has full access to manage items, bids, users, and settings.
+- **Admin:** Has full access to manage items.
 - **Regular User:** Can view items and participate in bidding.
-
-### API Endpoints
-
-#### Authentication
-
-- `POST /api/login`: Log in a user.
-- `POST /api/register`: Register a new user.
-
-#### Items
-
-- `GET /api/items`: List all items with pagination and search functionality.
-- `POST /api/items`: Create a new item (Admin only).
-- `GET /api/items/{id}`: Get item details.
-- `PUT /api/items/{id}`: Update an item (Admin only).
-- `DELETE /api/items/{id}`: Delete an item (Admin only).
-
-#### Bids
-
-- `POST /api/bids`: Place a new bid on an item.
-- `GET /api/bids`: List all bids by the authenticated user.
-
-#### Auto-Bid
-
-- `POST /api/bids/activate-auto-bid`: Activate or update an auto-bid for a specific item.
-
-#### Notifications
-
-- `GET /api/notifications`: Get the list of notifications for the authenticated user.
-- `POST /api/notifications/mark-read`: Mark notifications as read.
 
 ## Seeding the Database
 
