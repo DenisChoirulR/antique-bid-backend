@@ -63,7 +63,13 @@ This is the backend for the Auction Application built with Laravel. It provides 
     php artisan db:seed
     ```
 
-7. **Run the application:**
+7. **Link the Storage:**
+
+    ```bash
+    php artisan storage:link
+    ```
+
+8. **Run the application:**
 
     Start the local development server:
 
