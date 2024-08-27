@@ -5,9 +5,11 @@ namespace App\Repositories\BidRepository;
 use App\Models\AutoBid;
 use App\Models\Bid;
 use App\Models\Item;
-use App\Models\Notification;
+use App\Notifications\AutoBidAlertNotification;
+use App\Notifications\OutbidNotification;
 use App\Repositories\BidRepository\Interfaces\BidRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 
 class BidRepository implements BidRepositoryInterface
 {
@@ -31,7 +33,9 @@ class BidRepository implements BidRepositoryInterface
         ]);
 
         $this->updateItemCurrentAmount($bid->item_id, $bid->bid_amount);
-        $this->checkBidAlert($bid->item_id, $bid->bid_amount, $userId);
+        $this->checkBidAlert($bid);
+
+        $this->notifyPreviousBidder($bid);
         $this->autoBid($bid->item_id, $bid->bid_amount, $userId);
 
         return $bid;
@@ -41,7 +45,7 @@ class BidRepository implements BidRepositoryInterface
     {
         return AutoBid::updateOrCreate(
             ['user_id' => auth()->id(), 'item_id' => $request->item_id],
-            ['max_bid_amount' => $request->max_bid_amount, 'bid_alert_percentage' => $request->bid_alert_percentage]
+            ['max_bid_amount' => $request->max_bid_amount, 'bid_alert_percentage' => $request->bid_alert_percentage, 'alert_sent' => false]
         );
     }
 
@@ -65,60 +69,44 @@ class BidRepository implements BidRepositoryInterface
         }
     }
 
-    protected function checkBidAlert($itemId, $currentAmount, $userId): void
+    private function notifyPreviousBidder($currentBid): void
     {
-        $autoBids = AutoBid::where('item_id', $itemId)
-            ->whereNot('user_id', $userId)
+        $item = $currentBid->item;
+
+        $previousHighestBid = $item->bids()
+            ->where('bid_amount', '<', $currentBid->bid_amount)
+            ->orderBy('bid_amount', 'desc')
+            ->first();
+
+        if ($previousHighestBid && $previousHighestBid->user_id != $currentBid->user_id) {
+            $previousBidder = $previousHighestBid->user;
+            Notification::send($previousBidder, new OutbidNotification($item));
+        }
+    }
+
+    protected function checkBidAlert($bid): void
+    {
+        $autoBids = AutoBid::where('item_id', $bid->item_id)
+            ->whereNot('user_id', $bid->user_id)
+            ->where('alert_sent', false)
+            ->where('is_active', true)
             ->get();
 
         foreach ($autoBids as $autoBid) {
             $thresholdAmount = ($autoBid->max_bid_amount * $autoBid->bid_alert_percentage) / 100;
 
-            if ($currentAmount >= $autoBid->max_bid_amount) {
-                $this->sendLoseBidAlert($autoBid->user_id, $itemId);
-            } elseif ($currentAmount >= $thresholdAmount) {
-                $this->sendBidAlert($autoBid->user_id, $autoBid->item_id, $currentAmount);
+            if ($bid->bid_amount >= $thresholdAmount) {
+                $this->sendBidAlert($autoBid, $bid->bid_amount);
             }
         }
     }
 
-    protected function sendBidAlert($userId, $itemId, $currentAmount): void
+    protected function sendBidAlert($autoBid, $currentAmount): void
     {
-        $notificationExists = Notification::where('user_id', $userId)
-            ->where('item_id', $itemId)
-            ->where('message', 'LIKE', "%Your auto-bid for the item%")
-            ->exists();
+        $autoBid->update([
+            'alert_sent' => true
+        ]);
 
-        if (!$notificationExists) {
-            $item = Item::find($itemId);
-            $message = "Your auto-bid for the item '{$item->name}' has reached the alert threshold you set";
-
-            Notification::create([
-                'user_id' => $userId,
-                'item_id' => $itemId,
-                'message' => $message,
-                'is_read' => false,
-            ]);
-        }
-    }
-
-    protected function sendLoseBidAlert($userId, $itemId): void
-    {
-        $notificationExists = Notification::where('user_id', $userId)
-            ->where('item_id', $itemId)
-            ->where('message', 'LIKE', "You've lost the bid for the item%")
-            ->exists();
-
-        if (!$notificationExists) {
-            $item = Item::find($itemId);
-            $message = "You've lost the bid for the item '{$item->name}' as another user has outbid your maximum bid amount";
-
-            Notification::create([
-                'user_id' => $userId,
-                'item_id' => $itemId,
-                'message' => $message,
-                'is_read' => false,
-            ]);
-        }
+        Notification::send($autoBid->user, new AutoBidAlertNotification($autoBid));
     }
 }
