@@ -26,12 +26,6 @@ This is the backend for the Auction Application built with Laravel. It provides 
 
 3. **Set up environment variables:**
 
-    Copy the example environment file and update it with your specific settings.
-
-    ```bash
-    cp .env.example .env
-    ```
-
     Update the `.env` file with your database credentials and other necessary configurations:
 
     ```env
@@ -43,19 +37,49 @@ This is the backend for the Auction Application built with Laravel. It provides 
     DB_PASSWORD=yourpassword
     ```
 
-4. **Generate application key:**
+    The application uses a mailer to send notifications to users, such as bid alerts and auction results. Configure the mailer settings in the .env file:
+
+    ```env
+    MAIL_MAILER=smtp
+    MAIL_HOST=smtp.mailtrap.io   # Replace with your SMTP server
+    MAIL_PORT=2525               # Replace with your SMTP port
+    MAIL_USERNAME=your_username  # Replace with your SMTP username
+    MAIL_PASSWORD=your_password  # Replace with your SMTP password
+    MAIL_ENCRYPTION=tls          # Use 'tls' or 'ssl' depending on your mail server
+    MAIL_FROM_ADDRESS=no-reply@yourdomain.com  # Replace with your sender address
+    MAIL_FROM_NAME="Antique Bid"  # Replace with your desired sender name
+    ```
+
+    The application uses Pusher to handle real-time notifications and updates, such as broadcasting bid updates to users in real-time. Configure Pusher settings in the .env file:
+
+    ```env
+    BROADCAST_CONNECTION=pusher
+    BROADCAST_DRIVER=pusher
+    PUSHER_APP_ID=your_app_id            # Replace with your Pusher App ID
+    PUSHER_APP_KEY=your_app_key          # Replace with your Pusher App Key
+    PUSHER_APP_SECRET=your_app_secret    # Replace with your Pusher App Secret
+    ```
+
+    You can simply copy the .env.example file as it already includes default configurations credential for the database, mailer, and Pusher.
+
+   ```bash
+    cp .env.example .env
+    ```
+
+
+5. **Generate application key:**
 
     ```bash
     php artisan key:generate
     ```
 
-5. **Run database migrations:**
+6. **Run database migrations:**
 
     ```bash
     php artisan migrate
     ```
 
-6. **Seed the database:**
+7. **Seed the database:**
 
     The project includes a seeder to create default admin and user accounts.
 
@@ -63,13 +87,13 @@ This is the backend for the Auction Application built with Laravel. It provides 
     php artisan db:seed
     ```
 
-7. **Link the Storage:**
+8. **Link the Storage:**
 
     ```bash
     php artisan storage:link
     ```
 
-8. **Run the application:**
+9. **Run the application:**
 
     Start the local development server:
 
