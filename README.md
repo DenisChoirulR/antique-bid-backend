@@ -103,6 +103,17 @@ This is the backend for the Auction Application built with Laravel. It provides 
 
     The application will be accessible at `http://localhost:8000`.
 
+    To ensure that background tasks such as processing bids, sending notifications, and handling auto-bids are executed properly, you also need to run the queue worker and scheduler         (The scheduler is used to automatically award the item to the highest bidder when the bidding deadline arrives):
+
+    ```bash
+    php artisan queue:work
+    ```
+
+    ```bash
+    php artisan schedule:work
+    ```
+
+
 ## Usage
 
 ### User Roles
@@ -121,3 +132,5 @@ The database seeder creates two roles: Admin and Regular users.
 - **Regular User Credentials:**
   - `user1@example.com / user1`
   - `user2@example.com / user2`
+ 
+You can also register new users from the registration menu in the application. Make sure to use a valid email address during registration, as this will allow you to receive important email notifications, such as bid alerts and auction results.
