@@ -6,5 +6,6 @@ interface BidRepositoryInterface
 {
     public function all();
     public function create($request);
-    public function activateAutoBid($request);
+    public function storeAutoBid($request);
+    public function deleteAutoBid($id);
 }

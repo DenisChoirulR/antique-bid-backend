@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ItemRequest;
 use App\Http\Resources\AutoBidResource;
+use App\Http\Resources\BillResource;
 use App\Http\Resources\ItemResource;
 use App\Repositories\ItemRepository\Interfaces\ItemRepositoryInterface;
 use Illuminate\Http\Request;
@@ -26,14 +27,7 @@ class ItemController extends Controller
     public function show($id): ItemResource
     {
         return new ItemResource(
-            $this->repository->find($id)->load('bids'),
-        );
-    }
-
-    public function getAutoBid($id): AutoBidResource
-    {
-        return AutoBidResource::make(
-            $this->repository->getAutoBid($id)
+            $this->repository->find($id)->load('bids', 'winner'),
         );
     }
 
@@ -54,5 +48,12 @@ class ItemController extends Controller
     public function delete($id)
     {
         return $this->repository->delete($id);
+    }
+
+    public function getBill($id)
+    {
+        return new BillResource(
+            $this->repository->getBill($id)->load('item', 'user'),
+        );
     }
 }

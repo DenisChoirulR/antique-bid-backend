@@ -31,10 +31,15 @@ class BidController extends Controller
         );
     }
 
-    public function activateAutoBid(AutoBidRequest $request): AutoBidResource
+    public function storeAutoBid(AutoBidRequest $request): AutoBidResource
     {
         return AutoBidResource::make(
-            $this->repository->activateAutoBid($request)
+            $this->repository->storeAutoBid($request)
         );
+    }
+
+    public function deleteAutoBid($itemId)
+    {
+        return $this->repository->deleteAutoBid($itemId);
     }
 }

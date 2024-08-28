@@ -8,6 +8,7 @@ use App\Models\Item;
 use App\Notifications\AutoBidAlertNotification;
 use App\Notifications\OutbidNotification;
 use App\Repositories\BidRepository\Interfaces\BidRepositoryInterface;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
@@ -27,9 +28,7 @@ class BidRepository implements BidRepositoryInterface
     public function store($itemId, $bidAmount, $userId)
     {
         $bid = Bid::create([
-            'item_id' => $itemId,
-            'user_id' => $userId,
-            'bid_amount' => $bidAmount,
+            'item_id' => $itemId, 'user_id' => $userId, 'bid_amount' => $bidAmount,
         ]);
 
         $this->updateItemCurrentAmount($bid->item_id, $bid->bid_amount);
@@ -41,12 +40,20 @@ class BidRepository implements BidRepositoryInterface
         return $bid;
     }
 
-    public function activateAutoBid($request)
+    public function storeAutoBid($request)
     {
         return AutoBid::updateOrCreate(
             ['user_id' => auth()->id(), 'item_id' => $request->item_id],
             ['max_bid_amount' => $request->max_bid_amount, 'bid_alert_percentage' => $request->bid_alert_percentage, 'alert_sent' => false]
         );
+    }
+
+    public function deleteAutoBid($id): Response
+    {
+        $item = Item::findOrFail($id);
+        AutoBid::where('user_id', Auth::id())->where('item_id', $item->id)->delete();
+
+        return response()->noContent();
     }
 
     public function updateItemCurrentAmount($itemId, $currentAmount)
@@ -103,9 +110,7 @@ class BidRepository implements BidRepositoryInterface
 
     protected function sendBidAlert($autoBid, $currentAmount): void
     {
-        $autoBid->update([
-            'alert_sent' => true
-        ]);
+        $autoBid->update(['alert_sent' => true]);
 
         Notification::send($autoBid->user, new AutoBidAlertNotification($autoBid));
     }

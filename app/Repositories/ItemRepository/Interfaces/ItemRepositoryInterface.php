@@ -9,4 +9,5 @@ interface ItemRepositoryInterface
     public function create($request);
     public function update($id, $request);
     public function delete($id);
+    public function getBill($id);
 }

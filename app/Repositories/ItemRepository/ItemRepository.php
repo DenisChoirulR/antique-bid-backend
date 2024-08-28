@@ -3,6 +3,7 @@
 namespace App\Repositories\ItemRepository;
 
 use App\Models\AutoBid;
+use App\Models\Bill;
 use App\Models\Item;
 use App\Repositories\ItemRepository\Interfaces\ItemRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -90,5 +91,10 @@ class ItemRepository implements ItemRepositoryInterface
         Item::findOrFail($id)->delete();
 
         return response()->noContent();
+    }
+
+    public function getBill($id)
+    {
+        return Bill::where('item_id', $id)->where('user_id', Auth::id())->firstOrFail();
     }
 }
