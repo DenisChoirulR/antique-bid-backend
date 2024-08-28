@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\ItemUpdate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ItemRequest;
 use App\Http\Resources\AutoBidResource;
@@ -40,9 +41,10 @@ class ItemController extends Controller
 
     public function update($id, ItemRequest $request): ItemResource
     {
-        return ItemResource::make(
-            $this->repository->update($id, $request)
-        );
+        $item = $this->repository->update($id, $request);
+        event(new ItemUpdate('Item Updated'));
+
+        return ItemResource::make($item);
     }
 
     public function delete($id)

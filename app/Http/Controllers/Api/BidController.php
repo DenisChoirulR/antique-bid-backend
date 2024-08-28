@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\ItemUpdate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\AutoBidRequest;
 use App\Http\Requests\Api\BidRequest;
@@ -26,9 +27,10 @@ class BidController extends Controller
 
     public function store(BidRequest $request): BidResource
     {
-        return BidResource::make(
-            $this->repository->create($request)
-        );
+        $bid = $this->repository->create($request);
+
+        event(new ItemUpdate('Item Updated'));
+        return BidResource::make($bid);
     }
 
     public function storeAutoBid(AutoBidRequest $request): AutoBidResource
