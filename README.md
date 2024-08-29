@@ -67,7 +67,7 @@ This is the backend for the Auction Application built with Laravel. It provides 
     ```
 
 6. **Timezone Configuration:**
-    To ensure that the application runs with the correct timezone, you need to configure the `APP_TIMEZONE` environment variable.
+    To ensure that the application runs with the correct timezone, you need to configure the `APP_TIMEZONE` environment variable. Update the .env
    
     ```env
     APP_TIMEZONE=UTC      # Replace with your Timezone
