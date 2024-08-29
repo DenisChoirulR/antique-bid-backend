@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\BillStatus;
+use App\Events\ItemUpdate;
 use App\Models\Bill;
 use App\Models\Item;
 use App\Models\Bid;
@@ -38,5 +39,7 @@ class AwardHighestBidder
                 Notification::send($highestBid->user, new ItemWonNotification($item, $bill));
             }
         }
+
+        event(new ItemUpdate('Item Updated'));
     }
 }

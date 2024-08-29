@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AutoBidAlertNotification extends Notification implements ShouldQueue
+class AutoBidAlertNotification extends Notification
 {
     use Queueable;
 

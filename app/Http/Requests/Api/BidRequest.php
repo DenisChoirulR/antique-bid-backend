@@ -25,6 +25,8 @@ class BidRequest extends FormRequest
      */
     public function rules(): array
     {
+
+
         return [
             'item_id' => [
                 'required',
@@ -32,8 +34,13 @@ class BidRequest extends FormRequest
                 'exists:items,id',
                 function ($attribute, $value, $fail) {
                     $item = Item::find($value);
-                    if ($item && $item->end_time < now()) {
-                        $fail('The bidding period for this item has ended.');
+                    if ($item) {
+                        if ($item->start_time > now()) {
+                            $fail('The bidding period for this item has not started yet.');
+                        }
+                        if ($item->end_time < now()) {
+                            $fail('The bidding period for this item has ended.');
+                        }
                     }
                 },
             ],
