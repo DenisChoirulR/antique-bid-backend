@@ -66,6 +66,12 @@ This is the backend for the Auction Application built with Laravel. It provides 
     cp .env.example .env
     ```
 
+6. **Timezone Configuration:**
+    To ensure that the application runs with the correct timezone, you need to configure the `APP_TIMEZONE` environment variable.
+   
+    ```env
+    APP_TIMEZONE=UTC      # Replace with your Timezone
+    ```
 
 5. **Generate application key:**
 
