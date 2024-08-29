@@ -14,7 +14,7 @@ This is the backend for the Auction Application built with Laravel. It provides 
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/your-username/auction-app.git
+    git clone https://github.com/your-username/antique-bid-backend.git
     cd antique-bid-backend
     ```
 
